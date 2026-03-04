@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { Especialidade } from "./src/types/especialidade";
+import { Paciente } from "./src/types/paciente";
 type Consulta = {
   id: number;
   paciente: string;
   medico: string;
   data: string;
   status: "agendada" | "confirmada" | "cancelada" | "realizada";
+};
+const paciente1: Paciente = {
+  id: 1,
+  nome: "Carlos Andrade",
+  cpf: "123.456.789-00",
+  email: "carlos@email.com",
+  telefone: "(11) 98765-4321",
 };
 const cardiologia: Especialidade = {
   id: 1,
