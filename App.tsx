@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
+import { Especialidade } from "./src/types/especialidade";
 type Consulta = {
   id: number;
   paciente: string;
@@ -7,7 +8,13 @@ type Consulta = {
   data: string;
   status: "agendada" | "confirmada" | "cancelada" | "realizada";
 };
+const cardiologia: Especialidade = {
+  id: 1,
+  nome: "Cardiologia",
+  descricao: "Cuidados com o coração",
+};
 export default function App() {
+  
   const [consulta, setConsulta] = useState<Consulta>({
     id: 1,
     paciente: "Carlos Andrade",
