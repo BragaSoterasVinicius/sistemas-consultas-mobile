@@ -53,6 +53,10 @@ export default function App() {
   });
 }
 
+function formatarData(data: Date): string {
+  return data.toLocaleDateString("pt-BR");
+}
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Sistema de Consultas</Text>
