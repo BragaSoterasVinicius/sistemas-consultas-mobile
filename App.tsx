@@ -45,6 +45,14 @@ export default function App() {
       status: "confirmada",
     });
   }
+
+  function formatarValor(valor: number): string {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Sistema de Consultas</Text>
