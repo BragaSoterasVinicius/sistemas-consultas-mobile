@@ -9,6 +9,8 @@ import ConsultaCard from "../components/ConsultaCard";
 import { styles } from "../styles/app.styles";
 
 export default function Home() {
+
+
   const cardiologia: Especialidade = {
     id: 1,
     nome: "Cardiologia",
@@ -42,10 +44,11 @@ export default function Home() {
   });
 
   function confirmarConsulta() {
-    setConsulta({
+    const novaConsulta = {
       ...consulta,
-      status: "confirmada",
-    });
+      status: "confirmada" as const,
+    };
+    setConsulta(novaConsulta);
   }
 
   function cancelarConsulta() {
