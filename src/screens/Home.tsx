@@ -54,6 +54,7 @@ export default function Home() {
       status: "confirmada" as const,
     };
     setConsulta(novaConsulta);
+    salvarConsulta(novaConsulta);
   }
 
   function cancelarConsulta() {
