@@ -58,10 +58,12 @@ export default function Home() {
   }
 
   function cancelarConsulta() {
-    setConsulta({
+    const novaConsulta = {
       ...consulta,
-      status: "cancelada",
-    });
+      status: "cancelada" as const,
+    };
+    salvarConsulta(novaConsulta);
+
   }
 
   async function salvarConsulta(consultaAtualizada: Consulta) {
