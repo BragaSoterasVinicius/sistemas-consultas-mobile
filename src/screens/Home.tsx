@@ -7,9 +7,10 @@ import { Medico } from "../interfaces/medico";
 import { Consulta } from "../interfaces/consulta";
 import ConsultaCard from "../components/ConsultaCard";
 import { styles } from "../styles/app.styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
-
+  const STORAGE_KEY = "@consultas:consulta_atual";
 
   const cardiologia: Especialidade = {
     id: 1,
@@ -57,6 +58,17 @@ export default function Home() {
       status: "cancelada",
     });
   }
+
+  async function salvarConsulta(consultaAtualizada: Consulta) {
+  try {
+    await AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(consultaAtualizada)
+    );
+  } catch (erro) {
+    console.error("Erro ao salvar:", erro);
+  }
+}
 
   return (
     <View style={styles.container}>
