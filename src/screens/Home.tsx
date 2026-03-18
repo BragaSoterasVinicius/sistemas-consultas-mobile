@@ -62,6 +62,7 @@ export default function Home() {
       ...consulta,
       status: "cancelada" as const,
     };
+    setConsulta(novaConsulta);
     salvarConsulta(novaConsulta);
 
   }
