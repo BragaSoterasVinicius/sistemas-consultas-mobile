@@ -12,6 +12,26 @@ const KEYS = {
   PACIENTES: "@consultas:pacientes",              // NOVO
 };
 
+// ========== PACIENTES ==========
+// Salva lista de pacientes
+export async function salvarPacientes(pacientes: Paciente[]) {
+  try {
+    await AsyncStorage.setItem(KEYS.PACIENTES, JSON.stringify(pacientes));
+  } catch (erro) {
+    console.error("Erro ao salvar pacientes:", erro);
+  }
+}
+// Busca lista de pacientes
+export async function obterPacientes(): Promise<Paciente[]> {
+  try {
+    const dados = await AsyncStorage.getItem(KEYS.PACIENTES);
+    return dados ? JSON.parse(dados) : [];
+  } catch (erro) {
+    console.error("Erro ao obter pacientes:", erro);
+    return [];
+  }
+}
+
 // ========== ESPECIALIDADES ==========
 // Salva array de especialidades no AsyncStorage
 export async function salvarEspecialidades(especialidades: Especialidade[]) {
