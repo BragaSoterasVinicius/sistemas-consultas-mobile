@@ -12,7 +12,13 @@ import ConsultaCard from "../components/ConsultaCard";
 export default function Home({ navigation }: any) {
   // Estado agora é um ARRAY de consultas
   const [consultas, setConsultas] = useState<Consulta[]>([]);
-
+  const [nomePaciente, setNomePaciente] = useState("");
+  // Carrega dados sempre que a tela ganhar foco
+  useFocusEffect(
+    React.useCallback(() => {
+      carregarDados();
+    }, [])
+  );
   // Carrega dados ao montar o componente
   useEffect(() => {
     carregarConsultas();
@@ -81,3 +87,11 @@ export default function Home({ navigation }: any) {
     </View>
   );
 }
+
+function useFocusEffect(arg0: () => void) {
+  throw new Error("Function not implemented.");
+}
+function carregarDados() {
+  throw new Error("Function not implemented.");
+}
+
