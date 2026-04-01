@@ -40,13 +40,19 @@ export default function Home({ navigation }: any) {
     await salvarConsultas(consultasAtualizadas); // Persiste no AsyncStorage
   }
 
-  // Atualiza status da consulta para "cancelada"
   async function cancelarConsulta(consultaId: number) {
-    const consultasAtualizadas = consultas.map((c) =>
-      c.id === consultaId ? { ...c, status: "cancelada" as const } : c
-    );
-    setConsultas(consultasAtualizadas);
-    await salvarConsultas(consultasAtualizadas);
+  // Atualiza estado local
+  const consultasAtualizadas = consultas.map((c) =>
+    c.id === consultaId ? { ...c, status: "cancelada" as const } : c
+  );
+  setConsultas(consultasAtualizadas);
+  
+  // Atualiza todas as consultas no storage
+  const todasConsultas = await obterConsultas();
+  const consultasAtualizadasCompletas = todasConsultas.map((c) =>
+    c.id === consultaId ? { ...c, status: "cancelada" as const } : c
+  );
+  await salvarConsultas(consultasAtualizadasCompletas);
   }
 
   return (
