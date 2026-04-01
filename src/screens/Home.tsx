@@ -1,109 +1,82 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Button, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Especialidade } from "../types/especialidade";
-import { Paciente } from "../types/paciente";
-import { Medico } from "../interfaces/medico";
-import { Consulta } from "../interfaces/consulta";
-import ConsultaCard from "../components/ConsultaCard";
-import { styles } from "../styles/app.styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Consulta } from "../interfaces/consulta";
+import { styles } from "../styles/app.styles";
+// Importa funções do service layer
+import { obterConsultas, salvarConsultas } from "../service/storage";
+import ConsultaCard from "../components/ConsultaCard";
 
-export default function Home() {
+// Recebe navigation como prop (injetado pelo React Navigation)
+export default function Home({ navigation }: any) {
+  // Estado agora é um ARRAY de consultas
+  const [consultas, setConsultas] = useState<Consulta[]>([]);
+
+  // Carrega dados ao montar o componente
   useEffect(() => {
-  carregarConsulta();
-}, []);
+    carregarConsultas();
+  }, []);
 
-  const STORAGE_KEY = "@consultas:consulta_atual";
-
-  const cardiologia: Especialidade = {
-    id: 1,
-    nome: "Cardiologia",
-    descricao: "Cuidados com o coração",
-  };
-
-  const medico1: Medico = {
-    id: 1,
-    nome: "Dr. Roberto Silva",
-    crm: "CRM12345",
-    especialidade: cardiologia,
-    ativo: true,
-  };
-
-  const paciente1: Paciente = {
-    id: 1,
-    nome: "Carlos Andrade",
-    cpf: "123.456.789-00",
-    email: "carlos@email.com",
-    telefone: "(11) 98765-4321",
-  };
-
-  const [consulta, setConsulta] = useState<Consulta>({
-    id: 1,
-    medico: medico1,
-    paciente: paciente1,
-    data: new Date(2026, 2, 10),
-    valor: 350,
-    status: "agendada",
-    observacoes: "Consulta de rotina",
-  });
-
-  function confirmarConsulta() {
-    const novaConsulta = {
-      ...consulta,
-      status: "confirmada" as const,
-    };
-    setConsulta(novaConsulta);
-    salvarConsulta(novaConsulta);
+  // Função que busca consultas do AsyncStorage
+  async function carregarConsultas() {
+    const consultasSalvas = await obterConsultas();
+    setConsultas(consultasSalvas);
   }
 
-  function cancelarConsulta() {
-    const novaConsulta = {
-      ...consulta,
-      status: "cancelada" as const,
-    };
-    setConsulta(novaConsulta);
-    salvarConsulta(novaConsulta);
-
-  }
-
-  async function salvarConsulta(consultaAtualizada: Consulta) {
-  try {
-    await AsyncStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(consultaAtualizada)
+  // Atualiza status da consulta para "confirmada"
+  async function confirmarConsulta(consultaId: number) {
+    // map cria novo array com a consulta modificada
+    const consultasAtualizadas = consultas.map((c) =>
+      c.id === consultaId ? { ...c, status: "confirmada" as const } : c
     );
-  } catch (erro) {
-    console.error("Erro ao salvar:", erro);
+    setConsultas(consultasAtualizadas); // Atualiza estado local
+    await salvarConsultas(consultasAtualizadas); // Persiste no AsyncStorage
   }
-}
 
-async function carregarConsulta() {
-  try {
-    const dados = await AsyncStorage.getItem(STORAGE_KEY);
-    if (dados) {
-      const consultaObj = JSON.parse(dados);
-      consultaObj.data = new Date(consultaObj.data);
-      setConsulta(consultaObj);
-    }
-  } catch (erro) {
-    console.error("Erro ao carregar:", erro);
+  // Atualiza status da consulta para "cancelada"
+  async function cancelarConsulta(consultaId: number) {
+    const consultasAtualizadas = consultas.map((c) =>
+      c.id === consultaId ? { ...c, status: "cancelada" as const } : c
+    );
+    setConsultas(consultasAtualizadas);
+    await salvarConsultas(consultasAtualizadas);
   }
-}
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.titulo}>Sistema de Consultas</Text>
-          <Text style={styles.subtitulo}>Consulta #{consulta.id}</Text>
+          <Text style={styles.titulo}>Minhas Consultas</Text>
+          <Text style={styles.subtitulo}>
+            {consultas.length} consulta(s) agendada(s)
+          </Text>
         </View>
-        <ConsultaCard
-          consulta={consulta}
-          onConfirmar={confirmarConsulta}
-          onCancelar={cancelarConsulta}
-        />
+
+        {/* Renderização condicional: vazio ou lista */}
+        {consultas.length === 0 ? (
+          <View style={{ padding: 20, alignItems: "center" }}>
+            <Text style={{ color: "#666", marginBottom: 20 }}>
+              Nenhuma consulta agendada ainda
+            </Text>
+            {/* Botão para navegar para Admin */}
+            <Button
+              title="Ir para Admin"
+              onPress={() => navigation.navigate("Admin")}
+            />
+          </View>
+        ) : (
+          // map renderiza um componente para cada consulta
+          consultas.map((consulta) => (
+            <ConsultaCard
+              key={consulta.id}
+              consulta={consulta}
+              onConfirmar={() => confirmarConsulta(consulta.id)}
+              onCancelar={() => cancelarConsulta(consulta.id)}
+            />
+          ))
+        )}
       </ScrollView>
     </View>
   );
