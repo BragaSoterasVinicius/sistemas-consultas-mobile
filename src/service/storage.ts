@@ -8,6 +8,8 @@ const KEYS = {
   ESPECIALIDADES: "@consultas:especialidades",
   MEDICOS: "@consultas:medicos",
   CONSULTAS: "@consultas:consultas",
+  PACIENTE_LOGADO: "@consultas:pacienteLogado",  // NOVO
+  PACIENTES: "@consultas:pacientes",              // NOVO
 };
 
 // ========== ESPECIALIDADES ==========
