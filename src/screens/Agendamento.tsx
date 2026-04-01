@@ -19,4 +19,14 @@ export default function Agendamento({ navigation }: any) {
     const meds = await obterMedicos();
     setEspecialidades(esps);
     setMedicos(meds);
-  }}
+  }
+// Filtra médicos quando uma especialidade é selecionada
+function selecionarEspecialidade(esp: Especialidade) {
+  setEspecialidadeSelecionada(esp);
+  setMedicoSelecionado(null); // Reseta médico ao mudar especialidade
+  // Filtra médicos da especialidade
+  const medicosEsp = medicos.filter((m) => m.especialidade.id === esp.id);
+  setMedicosFiltrados(medicosEsp);
+}
+
+}
