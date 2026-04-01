@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Consulta } from "../interfaces/consulta";
 import { styles } from "../styles/app.styles";
 // Importa funções do service layer
-import { obterConsultas, obterPacienteLogado, salvarConsultas } from "../service/storage";
+import { obterConsultas, obterPacienteLogado, removerPacienteLogado, salvarConsultas } from "../service/storage";
 import ConsultaCard from "../components/ConsultaCard";
 
 // Recebe navigation como prop (injetado pelo React Navigation)
@@ -113,6 +113,22 @@ export default function Home({ navigation }: any) {
     );
     setConsultas(consultasDoPaciente);
   }
+
+async function handleLogout() {
+  Alert.alert("Sair", "Deseja realmente sair da sua conta?", [
+    { text: "Cancelar", style: "cancel" },
+    {
+      text: "Sair",
+      onPress: async () => {
+        console.log("Fazendo logout...");
+        await removerPacienteLogado();
+        console.log("Paciente removido, navegando para Login");
+        navigation.replace("Login");
+      },
+    },
+  ]);
+}
+
 }
 
 function useFocusEffect(arg0: () => void) {
