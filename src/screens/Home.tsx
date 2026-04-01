@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Consulta } from "../interfaces/consulta";
 import { styles } from "../styles/app.styles";
 // Importa funções do service layer
-import { obterConsultas, salvarConsultas } from "../service/storage";
+import { obterConsultas, obterPacienteLogado, salvarConsultas } from "../service/storage";
 import ConsultaCard from "../components/ConsultaCard";
 
 // Recebe navigation como prop (injetado pelo React Navigation)
@@ -86,12 +86,20 @@ export default function Home({ navigation }: any) {
       </ScrollView>
     </View>
   );
+  async function carregarDados() {
+    // Verifica se há paciente logado
+    const paciente = await obterPacienteLogado();
+    if (!paciente) {
+      // Se não houver, redireciona para login
+      navigation.replace("Login");
+      return;
+    }
+    setNomePaciente(paciente.nome);
+    // Carrega consultas do paciente
+    const todasConsultas = await obterConsultas();
+    const consultasDoPaciente = todasConsultas.filter(
+      (c) => c.paciente.id === paciente.id
+    );
+    setConsultas(consultasDoPaciente);
+  }
 }
-
-function useFocusEffect(arg0: () => void) {
-  throw new Error("Function not implemented.");
-}
-function carregarDados() {
-  throw new Error("Function not implemented.");
-}
-
