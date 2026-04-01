@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { obterPacienteLogado, obterPacientes, salvarPacienteLogado } from "../service/storage";
+import { obterPacienteLogado, obterPacientes, salvarPacienteLogado, salvarPacientes } from "../service/storage";
 import { Alert } from "react-native";
+import { Paciente } from "../types/paciente";
 
 export default function CadastroPaciente({ navigation }: any) {
   const [cpf, setCpf] = useState("");
@@ -85,6 +86,44 @@ async function verificarCPF() {
   } catch (erro) {
     console.error("Erro ao verificar CPF:", erro);
     Alert.alert("Erro", "Não foi possível verificar o CPF");
+  } finally {
+    setVerificando(false);
+  }
+}
+
+async function completarCadastro() {
+  // Validações
+  if (!nome.trim()) {
+    Alert.alert("Erro", "Por favor, preencha seu nome");
+    return;
+  }
+  if (!email.trim()) {
+    Alert.alert("Erro", "Por favor, preencha seu email");
+    return;
+  }
+  try {
+    setVerificando(true);
+    
+    // Cria novo paciente
+    const novoPaciente: Paciente = {
+      id: Date.now(),
+      nome: nome.trim(),
+      cpf: cpf.trim(),
+      email: email.trim(),
+      telefone: telefone.trim() || undefined,
+    };
+    // Adiciona à lista e salva
+    const pacientes = await obterPacientes();
+    const novaLista = [...pacientes, novoPaciente];
+    await salvarPacientes(novaLista);
+    
+    // Loga o paciente automaticamente
+    await salvarPacienteLogado(novoPaciente);
+    console.log("Cadastro realizado! Navegando para Home...");
+    navigation.replace("Home");
+  } catch (erro) {
+    console.error("Erro ao cadastrar:", erro);
+    Alert.alert("Erro", "Não foi possível realizar o cadastro");
   } finally {
     setVerificando(false);
   }
