@@ -30,15 +30,20 @@ export default function Home({ navigation }: any) {
     setConsultas(consultasSalvas);
   }
 
-  // Atualiza status da consulta para "confirmada"
   async function confirmarConsulta(consultaId: number) {
-    // map cria novo array com a consulta modificada
-    const consultasAtualizadas = consultas.map((c) =>
-      c.id === consultaId ? { ...c, status: "confirmada" as const } : c
-    );
-    setConsultas(consultasAtualizadas); // Atualiza estado local
-    await salvarConsultas(consultasAtualizadas); // Persiste no AsyncStorage
-  }
+  // Atualiza estado local
+  const consultasAtualizadas = consultas.map((c) =>
+    c.id === consultaId ? { ...c, status: "confirmada" as const } : c
+  );
+  setConsultas(consultasAtualizadas);
+  
+  // Atualiza todas as consultas no storage
+  const todasConsultas = await obterConsultas();
+  const consultasAtualizadasCompletas = todasConsultas.map((c) =>
+    c.id === consultaId ? { ...c, status: "confirmada" as const } : c
+  );
+  await salvarConsultas(consultasAtualizadasCompletas);
+}
 
   async function cancelarConsulta(consultaId: number) {
   // Atualiza estado local
