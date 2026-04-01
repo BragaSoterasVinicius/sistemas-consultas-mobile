@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { obterPacienteLogado, obterPacientes, salvarPacienteLogado, salvarPacientes } from "../service/storage";
-import { Alert } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar, TouchableOpacity, View } from "react-native";
 import { Paciente } from "../types/paciente";
+import { styles } from "../styles/app.styles";
 
 export default function CadastroPaciente({ navigation }: any) {
   const [cpf, setCpf] = useState("");
@@ -128,4 +129,125 @@ async function completarCadastro() {
     setVerificando(false);
   }
 }
+return (
+  <KeyboardAvoidingView
+    style={styles.container}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+  >
+    <StatusBar style="light" />
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.header}>
+        <Text style={styles.icone}>TDSPO</Text>
+        <Text style={styles.titulo}>Bem-vindo!</Text>
+        <Text style={styles.subtitulo}>
+          {etapa === "cpf" 
+            ? "Informe seu CPF para continuar"
+            : "Complete seu cadastro"}
+        </Text>
+      </View>
+      <View style={styles.form}>
+        {/* ETAPA 1: Verificação de CPF */}
+        {etapa === "cpf" && (
+          <>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>CPF *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="000.000.000-00"
+                value={cpf}
+                onChangeText={(texto) => {
+                  setCpf(texto);
+                  setErro(""); // Limpa o erro ao digitar
+                }}
+                keyboardType="numeric"
+                maxLength={14}
+                editable={!verificando}
+              />
+            </View>
+            <TouchableOpacity 
+              style={[styles.botao, verificando && styles.botaoDesabilitado]} 
+              onPress={verificarCPF}
+              disabled={verificando}
+            >
+              <Text style={styles.botaoTexto}>
+                {verificando ? "Verificando..." : "Continuar"}
+              </Text>
+            </TouchableOpacity>
+            {/* Mensagem de erro com link para cadastro */}
+            {erro && (
+              <View style={styles.erroContainer}>
+                <Text style={styles.erroTexto}>{erro}</Text>
+                <TouchableOpacity 
+                  style={styles.botaoCadastro} 
+                  onPress={() => setEtapa("cadastro")}
+                >
+                  <Text style={styles.botaoCadastroTexto}>
+                    Fazer cadastro agora
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoTexto}>
+                Se você já é cadastrado, faremos login automaticamente.
+              </Text>
+            </View>
+          </>
+        )}
+        {/* ETAPA 2: Completar Cadastro */}
+        {etapa === "cadastro" && (
+          <>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>CPF</Text>
+              <TextInput
+                style={[styles.input, styles.inputDesabilitado]}
+                value={cpf}
+                editable={false}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Nome Completo *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Digite seu nome completo"
+                value={nome}
+                onChangeText={setNome}
+                autoCapitalize="words"
+                editable={!verificando}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="seu@email.com"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                editable={!verificando}
+              />
+            </View>
+            <TouchableOpacity 
+              style={[styles.botao, verificando && styles.botaoDesabilitado]} 
+              onPress={completarCadastro}
+              disabled={verificando}
+            >
+              <Text style={styles.botaoTexto}>
+                {verificando ? "Cadastrando..." : "Finalizar Cadastro"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.botaoVoltar} 
+              onPress={() => setEtapa("cpf")}
+              disabled={verificando}
+            >
+              <Text style={styles.botaoVoltarTexto}>← Voltar</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+    </ScrollView>
+  </KeyboardAvoidingView>
+);
 }
