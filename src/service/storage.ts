@@ -74,6 +74,41 @@ export async function removerPacienteLogado() {
   }
 }
 
+// ========== INICIALIZAÇÃO ==========
+export async function inicializarDados() {
+  try {
+    console.log("Iniciando sistema...");
+    
+    // Verifica se já existem especialidades
+    const especialidades = await obterEspecialidades();
+    console.log(`Especialidades no storage: ${especialidades.length}`);
+    if (especialidades.length === 0) {
+      console.log("Cadastrando especialidades iniciais...");
+      await salvarEspecialidades(especialidadesIniciais);
+    }
+    // Verifica se já existem médicos
+    const medicos = await obterMedicos();
+    console.log(`Médicos no storage: ${medicos.length}`);
+    if (medicos.length === 0) {
+      console.log("Cadastrando médicos iniciais...");
+      await salvarMedicos(medicosIniciais);
+    }
+    // Verifica se já existem pacientes
+    const pacientes = await obterPacientes();
+    console.log(`Pacientes no storage: ${pacientes.length}`);
+    console.log("Lista de pacientes:", 
+      pacientes.map(p => ({ nome: p.nome, cpf: p.cpf })));
+    
+    if (pacientes.length === 0) {
+      console.log("Cadastrando pacientes de teste...");
+      await salvarPacientes(pacientesIniciais);
+    }
+    console.log("Sistema inicializado com sucesso!");
+  } catch (erro) {
+    console.error("Erro ao inicializar dados:", erro);
+  }
+}
+
 // ========== ESPECIALIDADES ==========
 // Salva array de especialidades no AsyncStorage
 export async function salvarEspecialidades(especialidades: Especialidade[]) {
