@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { obterPacienteLogado } from "../service/storage";
+import { obterPacienteLogado, obterPacientes, salvarPacienteLogado } from "../service/storage";
+import { Alert } from "react-native";
 
 export default function CadastroPaciente({ navigation }: any) {
   const [cpf, setCpf] = useState("");
@@ -87,4 +88,5 @@ async function verificarCPF() {
   } finally {
     setVerificando(false);
   }
+}
 }
