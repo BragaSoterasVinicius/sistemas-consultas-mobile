@@ -103,3 +103,7 @@ export default function Home({ navigation }: any) {
     setConsultas(consultasDoPaciente);
   }
 }
+
+function useFocusEffect(arg0: () => void) {
+  throw new Error("Function not implemented.");
+}
