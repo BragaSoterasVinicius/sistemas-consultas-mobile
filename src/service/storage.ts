@@ -32,6 +32,48 @@ export async function obterPacientes(): Promise<Paciente[]> {
   }
 }
 
+// Salva paciente logado
+export async function salvarPacienteLogado(paciente: Paciente) {
+  try {
+    console.log("Salvando paciente logado:", paciente.nome, `(${paciente.cpf})`);
+    await AsyncStorage.setItem(KEYS.PACIENTE_LOGADO, JSON.stringify(paciente));
+    console.log("Paciente salvo no storage com sucesso");
+  } catch (erro) {
+    console.error("Erro ao salvar paciente logado:", erro);
+  }
+}
+// Busca paciente logado
+export async function obterPacienteLogado(): Promise<Paciente | null> {
+  try {
+    const dados = await AsyncStorage.getItem(KEYS.PACIENTE_LOGADO);
+    const paciente = dados ? JSON.parse(dados) : null;
+    console.log("obterPacienteLogado - Resultado:", 
+      paciente ? `${paciente.nome} (${paciente.cpf})` : "nenhum");
+    return paciente;
+  } catch (erro) {
+    console.error("Erro ao obter paciente logado:", erro);
+    return null;
+  }
+}
+// Remove paciente logado (logout)
+export async function removerPacienteLogado() {
+  try {
+    console.log("Antes do logout - verificando storage...");
+    const antes = await AsyncStorage.getItem(KEYS.PACIENTE_LOGADO);
+    console.log("Paciente antes do logout:", 
+      antes ? JSON.parse(antes).nome : "nenhum");
+    
+    await AsyncStorage.removeItem(KEYS.PACIENTE_LOGADO);
+    console.log("AsyncStorage.removeItem executado");
+    
+    const depois = await AsyncStorage.getItem(KEYS.PACIENTE_LOGADO);
+    console.log("Paciente após logout:", 
+      depois ? JSON.parse(depois).nome : "nenhum (logout bem-sucedido)");
+  } catch (erro) {
+    console.error("Erro ao fazer logout:", erro);
+  }
+}
+
 // ========== ESPECIALIDADES ==========
 // Salva array de especialidades no AsyncStorage
 export async function salvarEspecialidades(especialidades: Especialidade[]) {
