@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Button, Alert } from "react-native";
+import { View, Text, ScrollView, Button, Alert, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Consulta } from "../interfaces/consulta";
@@ -61,42 +61,71 @@ export default function Home({ navigation }: any) {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.titulo}>Minhas Consultas</Text>
-          <Text style={styles.subtitulo}>
-            {consultas.length} consulta(s) agendada(s)
+  <View style={styles.container}>
+    <StatusBar style="light" />
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.header}>
+        <Text style={styles.titulo}>Olá, {nomePaciente}! </Text>
+        <Text style={styles.subtitulo}>
+          {consultas.length} consulta(s) agendada(s)
+        </Text>
+      </View>
+      {/* Botões de ação */}
+      <View style={{ marginBottom: 20 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#4CAF50",
+            padding: 16,
+            borderRadius: 10,
+            marginBottom: 10,
+          }}
+          onPress={() => navigation.navigate("Agendamento")}
+        >
+          <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold", 
+            textAlign: "center" }}>
+            + Agendar Nova Consulta
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            backgroundColor: "rgba(255,255,255,0.2)",
+            padding: 12,
+            borderRadius: 10,
+          }}
+          onPress={handleLogout}
+        >
+          <Text style={{ color: "#fff", fontSize: 14, textAlign: "center" }}>
+            Sair
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/* Lista de consultas */}
+      {consultas.length === 0 ? (
+        <View style={{ 
+          backgroundColor: "rgba(255,255,255,0.1)", 
+          padding: 30, 
+          borderRadius: 15, 
+          alignItems: "center" 
+        }}>
+          <Text style={{ fontSize: 40, marginBottom: 15 }}>📅</Text>
+          <Text style={{ color: "#fff", fontSize: 18, marginBottom: 10, 
+            textAlign: "center" }}>
+            Você ainda não tem consultas agendadas
           </Text>
         </View>
-
-        {/* Renderização condicional: vazio ou lista */}
-        {consultas.length === 0 ? (
-          <View style={{ padding: 20, alignItems: "center" }}>
-            <Text style={{ color: "#666", marginBottom: 20 }}>
-              Nenhuma consulta agendada ainda
-            </Text>
-            {/* Botão para navegar para Admin */}
-            <Button
-              title="Ir para Admin"
-              onPress={() => navigation.navigate("Admin")}
-            />
-          </View>
-        ) : (
-          // map renderiza um componente para cada consulta
-          consultas.map((consulta) => (
-            <ConsultaCard
-              key={consulta.id}
-              consulta={consulta}
-              onConfirmar={() => confirmarConsulta(consulta.id)}
-              onCancelar={() => cancelarConsulta(consulta.id)}
-            />
-          ))
-        )}
-      </ScrollView>
-    </View>
-  );
+      ) : (
+        consultas.map((consulta) => (
+          <ConsultaCard
+            key={consulta.id}
+            consulta={consulta}
+            onConfirmar={confirmarConsulta}
+            onCancelar={cancelarConsulta}
+          />
+        ))
+      )}
+    </ScrollView>
+  </View>
+);
   async function carregarDados() {
     // Verifica se há paciente logado
     const paciente = await obterPacienteLogado();
